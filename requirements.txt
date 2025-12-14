@@ -1,0 +1,10 @@
+aioredis
+asyncio
+cachetools
+discord.py==2.6.4
+openai
+python-Levenshtein
+pytz
+redis
+requests
+warframe-market.py==1.0.4

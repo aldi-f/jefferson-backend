@@ -1,0 +1,32 @@
+services:
+  redis:
+    restart: unless-stopped
+    image: redis:trixie
+    container_name: redis_jefferson
+    command: redis-server --port 6378 --save "3600 1"
+    volumes:
+      - redis-data:/data
+    ports:
+      - "6378:6378"
+    networks:
+      - connect
+
+  jefferson:
+    container_name: jefferson
+    restart: unless-stopped
+    environment:
+      - TZ=UTC
+    build:
+      context: .
+    env_file: .env.example
+    depends_on:
+      - redis
+    networks:
+      - connect
+
+networks:
+  connect:
+    driver: bridge
+
+volumes:
+  redis-data:
