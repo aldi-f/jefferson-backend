@@ -1,26 +1,94 @@
-# from typing import Any, Dict
-# import aiohttp
-# from jeff.utils.http import get_shared_session
+import aiohttp
+import asyncio
+import msgspec
+import logging
+from typing_extensions import Self
 
-# BASE_URL = "https://api.warframestat.us"
+from app.config.settings import settings
 
-# class WorldstateClient:
-#     def __init__(self, platform: str = "pc", language: str = "en"):
-#         self.platform = platform
-#         self.language = language
+logger = logging.getLogger(__name__)
 
-#     async def get(self, path: str) -> Dict[str, Any]:
-#         url = f"{BASE_URL}/{self.platform}/{path}?language={self.language}"
-#         session = get_shared_session()
-#         async with session.get(url, timeout=20) as resp:
-#             resp.raise_for_status()
-#             return await resp.json()
 
-#     async def get_fissures(self) -> Dict[str, Any]:
-#         return await self.get("fissures")
+class WorldstateClient:
+    """Warframe World State API client with caching."""
+    
+    _instance: Self | None = None
+    _cached_data = None
+    _cached_at: float | None = None
+    
+    def __new__(cls) -> Self:
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+            cls._instance._session = None
+        return cls._instance
+    
+    async def _get_session(self):
+        """Get or create aiohttp session."""
+        if self._session is None:
+            self._session = aiohttp.ClientSession()
+        return self._session
+    
+    async def get_worldstate_raw(self, params: dict = {}):
+        """Get raw world state data without caching."""
+        try:
+            session = await self._get_session()
+            async with session.get(settings.WORLDSTATE_URL, params=params) as response:
+                if response.status == 200:
+                    return await response.text()
+                else:
+                    logger.error(f"Worldstate API error: {response.status}")
+                    return None
+        except Exception as e:
+            logger.error(f"Error fetching worldstate: {e}")
+            return None
+    
+    async def get_worldstate(self, model_class=None):
+        """Get current world state with caching."""
+        now = asyncio.get_event_loop().time()
+        
+        # Check cache validity
+        cache_valid = (self._cached_data is not None and 
+                      self._cached_at is not None and 
+                      now - self._cached_at < settings.WORLDSTATE_CACHE_TTL)
+        
+        if not cache_valid:
+            try:
+                session = await self._get_session()
+                async with session.get(settings.WORLDSTATE_URL) as response:
+                    if response.status == 200:
+                        data = await response.text()
+                        
+                        # Parse with msgspec if model class provided
+                        if model_class:
+                            self._cached_data = msgspec.json.decode(data, type=model_class)
+                        else:
+                            self._cached_data = data
+                        
+                        self._cached_at = now
+                        logger.info("Worldstate data updated")
+                    else:
+                        logger.error(f"Worldstate API error: {response.status}")
+                        if self._cached_data is None:
+                            raise Exception(f"Failed to fetch worldstate and no cache available: {response.status}")
+            except Exception as e:
+                logger.error(f"Error fetching worldstate: {e}")
+                if self._cached_data is None:
+                    raise e
+        
+        return self._cached_data
+    
+    async def clear_cache(self):
+        """Clear cached worldstate data."""
+        self._cached_data = None
+        self._cached_at = None
+        logger.info("Worldstate cache cleared")
+    
+    async def close(self):
+        """Close aiohttp session."""
+        if self._session:
+            await self._session.close()
+            self._session = None
 
-#     async def get_alerts(self) -> Dict[str, Any]:
-#         return await self.get("alerts")
 
-#     async def get_cycles(self) -> Dict[str, Any]:
-#         return await self.get("cycles")
+# Export singleton instance
+worldstate_client = WorldstateClient()

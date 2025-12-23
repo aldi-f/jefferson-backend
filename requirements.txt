@@ -2,9 +2,11 @@ aioredis
 asyncio
 cachetools
 discord.py==2.6.4
+fastapi
 openai
 python-Levenshtein
 pytz
 redis
 requests
+uvicorn
 warframe-market.py==1.0.4
