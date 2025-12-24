@@ -1,12 +1,17 @@
 ######################################################
 ## Alerts
 ######################################################
-from msgspec import Struct, field
 from datetime import datetime
+
+from msgspec import Struct, field
 from pytz import UTC
 
+from app.funcs import (
+    find_internal_mission_name,
+    find_internal_mission_type,
+    find_internal_name,
+)
 from app.redis_manager import cache
-from app.funcs import find_internal_name, find_internal_mission_name, find_internal_mission_type
 
 
 def parse_mongo_date(date_dict: dict) -> datetime:
@@ -23,13 +28,13 @@ def parse_unique_name(internal_name: str) -> str | None:
     name = find_internal_name(internal_name, cache)
     if name:
         return name
-    
+
     # Try removing prefix
     internal_name = internal_name.replace("StoreItems/", "")
     name = find_internal_name(internal_name, cache)
     if name:
         return name
-    
+
     return None
 
 
@@ -61,9 +66,14 @@ class _MissionInfo(Struct):
 
     def __post_init__(self):
         if isinstance(self.location, str):
-            self.location = find_internal_mission_name(self.location, cache) or self.location
+            self.location = (
+                find_internal_mission_name(self.location, cache) or self.location
+            )
         if isinstance(self.mission_type, str):
-            self.mission_type = find_internal_mission_type(self.mission_type, cache) or self.mission_type
+            self.mission_type = (
+                find_internal_mission_type(self.mission_type, cache)
+                or self.mission_type
+            )
 
 
 class Alert(Struct):

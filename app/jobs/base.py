@@ -3,7 +3,9 @@ import logging
 from abc import ABC, abstractmethod
 from datetime import datetime
 from enum import Enum
-from typing import Optional, Any, Dict
+from typing import Any
+
+from pytz import UTC
 
 
 class JobStatus(str, Enum):
@@ -19,12 +21,12 @@ class JobResult:
         self,
         job_name: str,
         status: JobStatus,
-        started_at: Optional[datetime] = None,
-        completed_at: Optional[datetime] = None,
-        duration_seconds: Optional[float] = None,
+        started_at: datetime | None = None,
+        completed_at: datetime | None = None,
+        duration_seconds: float | None = None,
         message: str = "",
-        data: Optional[Dict[str, Any]] = None,
-        error_details: Optional[str] = None
+        data: dict[str, Any] | None = None,
+        error_details: str | None = None,
     ):
         self.job_name = job_name
         self.status = status
@@ -45,7 +47,7 @@ class JobResult:
             duration_seconds=self.duration_seconds,
             message=self.message,
             data=self.data,
-            error_details=self.error_details
+            error_details=self.error_details,
         )
         for key, value in kwargs.items():
             setattr(result, key, value)
@@ -53,40 +55,40 @@ class JobResult:
 
 
 class BaseJob(ABC):
-    def __init__(self, name: str, logger: Optional[logging.Logger] = None):
+    def __init__(self, name: str, logger: logging.Logger | None = None):
         self.name = name
         self.logger = logger or logging.getLogger(f"job.{name}")
         self._cancelled = False
-        
+
     @abstractmethod
     async def execute(self, *args, **kwargs) -> JobResult:
         """Execute the job and return the result."""
         pass
-    
+
     def cancel(self):
         """Cancel the job."""
         self._cancelled = True
         self.logger.info(f"Job {self.name} has been marked for cancellation")
-    
+
     @property
     def is_cancelled(self) -> bool:
         return self._cancelled
-    
+
     def create_result(
         self,
         status: JobStatus,
         message: str,
-        started_at: Optional[datetime] = None,
-        completed_at: Optional[datetime] = None,
-        data: Optional[Dict[str, Any]] = None,
-        error_details: Optional[str] = None
+        started_at: datetime | None = None,
+        completed_at: datetime | None = None,
+        data: dict[str, Any] | None = None,
+        error_details: str | None = None,
     ) -> JobResult:
         """Create a JobResult with timing information."""
         if started_at and completed_at:
             duration = (completed_at - started_at).total_seconds()
         else:
             duration = None
-            
+
         return JobResult(
             job_name=self.name,
             status=status,
@@ -95,38 +97,42 @@ class BaseJob(ABC):
             duration_seconds=duration,
             message=message,
             data=data,
-            error_details=error_details
+            error_details=error_details,
         )
 
 
 class JobRunner:
     def __init__(self):
         self.logger = logging.getLogger("job_runner")
-    
+
     async def run_job(self, job: BaseJob, *args, **kwargs) -> JobResult:
         """Run a job and handle errors and cancellation."""
-        started_at = datetime.utcnow()
-        
+        started_at = datetime.now(tz=UTC)
+
         try:
             self.logger.info(f"Starting job: {job.name}")
             result = await job.execute(*args, **kwargs)
-            
+
             # Fill in missing timing info if job didn't provide it
             if result.started_at is None:
                 result = result.replace(started_at=started_at)
             if result.completed_at is None:
-                result = result.replace(completed_at=datetime.utcnow())
-            if result.duration_seconds is None and result.started_at and result.completed_at:
+                result = result.replace(completed_at=datetime.now(tz=UTC))
+            if (
+                result.duration_seconds is None
+                and result.started_at
+                and result.completed_at
+            ):
                 duration = (result.completed_at - result.started_at).total_seconds()
                 result = result.replace(duration_seconds=duration)
-                
+
             self.logger.info(f"Job {job.name} completed with status: {result.status}")
             return result
-            
+
         except Exception as e:
-            completed_at = datetime.utcnow()
+            completed_at = datetime.now(tz=UTC)
             duration = (completed_at - started_at).total_seconds()
-            
+
             self.logger.error(f"Job {job.name} failed with error: {str(e)}")
             return JobResult(
                 job_name=job.name,
@@ -134,13 +140,13 @@ class JobRunner:
                 started_at=started_at,
                 completed_at=completed_at,
                 duration_seconds=duration,
-                message=f"Job failed due to unhandled exception",
-                error_details=str(e)
+                message="Job failed due to unhandled exception",
+                error_details=str(e),
             )
         except asyncio.CancelledError:
-            completed_at = datetime.utcnow()
+            completed_at = datetime.now(tz=UTC)
             duration = (completed_at - started_at).total_seconds()
-            
+
             self.logger.warning(f"Job {job.name} was cancelled")
             return JobResult(
                 job_name=job.name,
@@ -148,5 +154,5 @@ class JobRunner:
                 started_at=started_at,
                 completed_at=completed_at,
                 duration_seconds=duration,
-                message="Job was cancelled"
+                message="Job was cancelled",
             )

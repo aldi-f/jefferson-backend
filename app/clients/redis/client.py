@@ -1,28 +1,24 @@
-from typing_extensions import Self
-from typing import Optional
-
 import redis
+from typing_extensions import Self
+
 from app.config.settings import settings
 
 
 class RedisClient:
-    """Redis client with singleton pattern."""
-    
     _instance: Self | None = None
-    
+
     def __new__(cls) -> Self:
         if cls._instance is None:
             cls._instance = super().__new__(cls)
             cls._instance._client = None
             cls._instance._connected = False
         return cls._instance
-    
+
     def __init__(self):
         if not self._connected:
             self._connect()
-    
+
     def _connect(self) -> None:
-        """Establish Redis connection."""
         try:
             self._client = redis.Redis(
                 host=settings.REDIS_HOST,
@@ -31,30 +27,30 @@ class RedisClient:
                 password=settings.REDIS_PASSWORD,
                 decode_responses=True,
                 socket_connect_timeout=5,
-                retry_on_timeout=True
+                retry_on_timeout=True,
             )
             # Test connection
             self._client.ping()
             self._connected = True
         except Exception as e:
             raise ConnectionError(f"Failed to connect to Redis: {e}")
-    
+
     def get_client(self):
         """Get Redis client instance."""
         if not self._connected or not self._client:
             self._connect()
         return self._client
-    
-    def get(self, key: str) -> Optional[str]:
+
+    def get(self, key: str) -> str | None:
         """Get value from Redis."""
         try:
             client = self.get_client()
-            return client.get(key)
+            return client.get(key)  # pyright: ignore
         except Exception as e:
             print(f"Redis get error for key {key}: {e}")
             return None
-    
-    def set(self, key: str, value: str, ex: Optional[int] = None) -> bool:
+
+    def set(self, key: str, value: str, ex: int | None = None) -> bool:
         """Set value in Redis with optional expiration."""
         try:
             client = self.get_client()
@@ -62,7 +58,7 @@ class RedisClient:
         except Exception as e:
             print(f"Redis set error for key {key}: {e}")
             return False
-    
+
     def exists(self, key: str) -> bool:
         """Check if key exists in Redis."""
         try:
@@ -71,7 +67,7 @@ class RedisClient:
         except Exception as e:
             print(f"Redis exists error for key {key}: {e}")
             return False
-    
+
     def delete(self, key: str) -> bool:
         """Delete key from Redis."""
         try:
@@ -80,16 +76,16 @@ class RedisClient:
         except Exception as e:
             print(f"Redis delete error for key {key}: {e}")
             return False
-    
+
     def ping(self) -> bool:
         """Ping Redis to check connection."""
         try:
             client = self.get_client()
-            return client.ping()
+            return client.ping()  # pyright: ignore
         except Exception as e:
             print(f"Redis ping error: {e}")
             return False
-    
+
     def close(self) -> None:
         """Close Redis connection."""
         if self._client:
@@ -97,5 +93,4 @@ class RedisClient:
             self._connected = False
 
 
-# Export singleton instance
 redis_client = RedisClient()
