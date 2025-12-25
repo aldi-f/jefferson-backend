@@ -6,12 +6,11 @@ from datetime import datetime
 from msgspec import Struct, field
 from pytz import UTC
 
-from app.funcs import (
-    find_internal_mission_name,
-    find_internal_mission_type,
-    find_internal_name,
+from app.clients.warframe.utils.localization import (
+    localize_internal_mission_name,
+    localize_internal_mission_type,
+    localize_internal_name,
 )
-from app.redis_manager import cache
 
 
 def parse_mongo_date(date_dict: dict) -> datetime:
@@ -21,30 +20,13 @@ def parse_mongo_date(date_dict: dict) -> datetime:
     return datetime.fromtimestamp(timestamp_ms / 1000, tz=UTC)
 
 
-def parse_unique_name(internal_name: str) -> str | None:
-    """Try to parse internal name to user-friendly name."""
-
-    # Try with raw name:
-    name = find_internal_name(internal_name, cache)
-    if name:
-        return name
-
-    # Try removing prefix
-    internal_name = internal_name.replace("StoreItems/", "")
-    name = find_internal_name(internal_name, cache)
-    if name:
-        return name
-
-    return None
-
-
 class _counted_items(Struct):
     item: str = field(name="ItemType")
     quantity: int = field(name="ItemCount")
 
     def __post_init__(self):
         if isinstance(self.item, str):
-            self.item = parse_unique_name(self.item) or self.item
+            self.item = localize_internal_name(self.item)
 
 
 class _missionReward(Struct):
@@ -66,14 +48,9 @@ class _MissionInfo(Struct):
 
     def __post_init__(self):
         if isinstance(self.location, str):
-            self.location = (
-                find_internal_mission_name(self.location, cache) or self.location
-            )
+            self.location = localize_internal_mission_name(self.location)
         if isinstance(self.mission_type, str):
-            self.mission_type = (
-                find_internal_mission_type(self.mission_type, cache)
-                or self.mission_type
-            )
+            self.mission_type = localize_internal_mission_type(self.mission_type)
 
 
 class Alert(Struct):

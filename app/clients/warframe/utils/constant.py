@@ -1,0 +1,8 @@
+VOID_TYPE = {
+    "VoidT1": "Lith",
+    "VoidT2": "Meso",
+    "VoidT3": "Neo",
+    "VoidT4": "Axi",
+    "VoidT5": "Requiem",
+    "VoidT6": "Omnia",
+}

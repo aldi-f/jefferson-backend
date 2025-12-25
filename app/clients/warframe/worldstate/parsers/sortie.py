@@ -1,12 +1,15 @@
 ######################################################
 ## Daily Sortie
 ######################################################
-from msgspec import Struct, field
 from datetime import datetime
+
+from msgspec import Struct, field
 from pytz import UTC
 
-from app.redis_manager import cache
-from app.funcs import find_internal_mission_name, find_internal_mission_type
+from app.clients.warframe.utils.localization import (
+    localize_internal_mission_name,
+    localize_internal_mission_type,
+)
 
 
 def parse_mongo_date(date_dict: dict) -> datetime:
@@ -24,9 +27,10 @@ class _Variant(Struct):
 
     def __post_init__(self):
         if isinstance(self.mission_type, str):
-            self.mission_type = find_internal_mission_type(self.mission_type, cache) or self.mission_type
+            self.mission_type = localize_internal_mission_type(self.mission_type)
         if isinstance(self.node, str):
-            self.node = find_internal_mission_name(self.node, cache) or self.node
+            self.node = localize_internal_mission_name(self.node)
+
 
 class Sortie(Struct):
     activation: datetime | dict = field(name="Activation")
@@ -43,6 +47,7 @@ class Sortie(Struct):
             self.activation = parse_mongo_date(self.activation)
         if isinstance(self.expiry, dict):
             self.expiry = parse_mongo_date(self.expiry)
+
 
 ######################################################
 #   "Sorties": [

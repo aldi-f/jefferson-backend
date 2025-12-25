@@ -1,12 +1,14 @@
 ######################################################
 ## Darvo's daily deal
 ######################################################
-from msgspec import Struct, field
 from datetime import datetime
+
+from msgspec import Struct, field
 from pytz import UTC
 
-from app.redis_manager import cache
-from app.funcs import find_internal_weapon_name, find_internal_warframe_name, find_internal_name
+from app.clients.warframe.utils.localization import (
+    localize_internal_name,
+)
 
 
 def parse_mongo_date(date_dict: dict) -> datetime:
@@ -14,22 +16,6 @@ def parse_mongo_date(date_dict: dict) -> datetime:
     number_long = date_dict["$date"]["$numberLong"]
     timestamp_ms = int(number_long)
     return datetime.fromtimestamp(timestamp_ms / 1000, tz=UTC)
-
-def parse_unique_name(internal_name: str) -> str | None:
-    """Try to parse internal name to user-friendly name."""
-
-    # Try with raw name:
-    name = find_internal_name(internal_name, cache)
-    if name:
-        return name
-    
-    # Try removing prefix
-    internal_name = internal_name.replace("StoreItems/", "")
-    name = find_internal_name(internal_name, cache)
-    if name:
-        return name
-    
-    return None
 
 
 class Darvo(Struct):
@@ -48,7 +34,8 @@ class Darvo(Struct):
         if isinstance(self.expiry, dict):
             self.expiry = parse_mongo_date(self.expiry)
         if isinstance(self.store_item, str):
-            self.store_item = parse_unique_name(self.store_item) or self.store_item
+            self.store_item = localize_internal_name(self.store_item)
+
 
 ######################################################
 #   "DailyDeals": [

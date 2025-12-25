@@ -69,6 +69,7 @@ class Settings:
         "companion": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/companions.json",
         "enemy": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/enemies.json",
         "internalnames": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/internal_names.json",
+        "internalnames:en": "https://raw.githubusercontent.com/calamity-inc/warframe-public-export-plus/refs/heads/senpai/dict.en.json",
         "missions": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/missions.json",
         "mod": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/mods.json",
         "skins": "https://raw.githubusercontent.com/WFCD/warframe-items/master/data/json/Skins.json",
@@ -80,8 +81,6 @@ class Settings:
 
     # To reference cache keys (e.g. ability:1)
     CACHE_VERSION = os.getenv("CACHE_VERSION", "1")
-
-    INTERNAL_NAME_KEY = f"internalnames:{CACHE_VERSION}"
 
     # Which cogs to load (module paths)
     COGS: tuple[str, ...] = (

@@ -1,22 +1,17 @@
 ######################################################
 ## Fissures
 ######################################################
-from msgspec import Struct, field
 from datetime import datetime
+
+from msgspec import Struct, field
 from pytz import UTC
 
-from app.redis_manager import cache
-from app.funcs import find_internal_mission_name, find_internal_mission_type
+from app.clients.warframe.utils.constant import VOID_TYPE
+from app.clients.warframe.utils.localization import (
+    localize_internal_mission_name,
+    localize_internal_mission_type,
+)
 
-
-VOID_TYPE = {
-    "VoidT1": "Lith",
-    "VoidT2": "Meso",
-    "VoidT3": "Neo",
-    "VoidT4": "Axi",
-    "VoidT5": "Requiem",
-    "VoidT6": "Omnia",
-}
 
 def parse_mongo_date(date_dict: dict) -> datetime:
     """Parse MongoDB $date format to datetime."""
@@ -42,13 +37,13 @@ class Fissure(Struct):
         if isinstance(self.expiry, dict):
             self.expiry = parse_mongo_date(self.expiry)
         if isinstance(self.node, str):
-            self.node = find_internal_mission_name(self.node, cache) or self.node
+            self.node = localize_internal_mission_name(self.node)
         if isinstance(self.mission_type, str):
-            self.mission_type = find_internal_mission_type(self.mission_type, cache) or self.mission_type
+            self.mission_type = localize_internal_mission_type(self.mission_type)
         if isinstance(self.modifier, str):
             self.modifier = VOID_TYPE.get(self.modifier, self.modifier)
             self.tier = list(VOID_TYPE.values()).index(self.modifier) + 1
-        
+
 
 ######################################################
 #   "ActiveMissions": [

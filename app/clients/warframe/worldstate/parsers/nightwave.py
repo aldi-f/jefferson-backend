@@ -1,9 +1,14 @@
 ######################################################
 ## Fissures
 ######################################################
-from msgspec import Struct, field
 from datetime import datetime
+
+from msgspec import Struct, field
 from pytz import UTC
+
+from app.clients.warframe.utils.localization import (
+    localize_internal_name,
+)
 
 
 def parse_mongo_date(date_dict: dict) -> datetime:
@@ -23,18 +28,20 @@ class _ActiveChallenge(Struct):
             self.activation = parse_mongo_date(self.activation)
         if isinstance(self.expiry, dict):
             self.expiry = parse_mongo_date(self.expiry)
+        if isinstance(self.challenge, dict):
+            self.challenge = localize_internal_name(self.challenge)
 
     @property
     def type(self) -> str:
-        if self.challenge.startswith("/Lotus/Types/Challenges/Seasons/Daily/"):
+        if "Daily" in self.challenge:
             return "Daily"
-        elif self.challenge.startswith("/Lotus/Types/Challenges/Seasons/Weekly/"):
+        elif "Weekly" in self.challenge:
             return "Weekly"
-        elif self.challenge.startswith("/Lotus/Types/Challenges/Seasons/WeeklyHard/"):
+        elif "WeeklyHard" in self.challenge:
             return "Weekly Hard"
         else:
             return "Unknown"
-    
+
     @property
     def standing(self) -> int:
         if self.type == "Daily":
@@ -45,6 +52,7 @@ class _ActiveChallenge(Struct):
             return 7000
         else:
             return 0
+
 
 class Nightwave(Struct):
     activation: datetime | dict = field(name="Activation")
