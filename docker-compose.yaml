@@ -3,11 +3,11 @@ services:
     restart: unless-stopped
     image: redis:alpine
     container_name: redis_jefferson
-    command: redis-server --port 6378 --save "3600 1"
+    command: redis-server --port 6379 --save "3600 1"
     volumes:
       - redis-data:/data
     ports:
-      - "6378:6378"
+      - "6379:6379"
     networks:
       - connect
 
@@ -19,6 +19,8 @@ services:
     build:
       context: .
     env_file: .env
+    ports:
+      - "8000:8000"
     depends_on:
       - redis
     networks:

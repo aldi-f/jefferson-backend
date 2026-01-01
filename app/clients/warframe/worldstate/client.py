@@ -60,9 +60,8 @@ class WorldstateClient:
                 async with session.get(settings.WORLDSTATE_URL) as response:
                     if response.status == 200:
                         data = await response.text()
-
                         self._cached_data = msgspec.json.decode(
-                            data, type=WorldstateModel, strict=False
+                            data, type=WorldstateModel, strict=True
                         )
 
                         self._cached_at = now

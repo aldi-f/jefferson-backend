@@ -28,13 +28,14 @@ class Alerts(commands.Cog):
         try:
             # Get worldstate data using the new client
             worldstate = await worldstate_client.get_worldstate()
+            self.logger.info(f"Received worldstate data: {worldstate}")
             alerts = worldstate.alerts
+            # if len(alerts) == 0:
+            #     embed.description = "There are no alerts currently running."
+            #     await ctx.send(embed=embed)
+            #     return
 
-            if len(alerts) == 0:
-                embed.description = "There are no alerts currently running."
-                await ctx.send(embed=embed)
-                return
-
+            self.logger.info(f"Processing {alerts} alerts")
             for alert in alerts:
                 info = alert.mission_info
                 key = f"{info.location} | {info.mission_type} | {info.faction} | ({info.min_level}-{info.max_level})"

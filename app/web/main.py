@@ -85,7 +85,9 @@ async def cache_info() -> Dict[str, Any]:
         cache_info = {"timestamp": int(time.time()), "cache_status": {}}
 
         # Check specific cache keys
-        cache_keys = ["github_data", "wiki_data"]
+        cache_keys = [
+            f"{key}:{settings.CACHE_VERSION}" for key in settings.GITHUB_SOURCES.keys()
+        ]
 
         for key in cache_keys:
             try:

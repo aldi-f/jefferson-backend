@@ -16,7 +16,7 @@ class PriceCheck:
 
     platinum = "<:Platinum:992917150358589550>"
 
-    def __init__(self, item: str | None = None, client: WarframeMarketClient = None):
+    def __init__(self, item: str, client: WarframeMarketClient = None):
         self.client = (
             client
             if isinstance(client, WarframeMarketClient)

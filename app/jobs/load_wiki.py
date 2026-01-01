@@ -35,8 +35,12 @@ class LoadWikiJob(BaseJob):
                     async with session.get(url) as response:
                         if response.status == 200:
                             try:
+                                # see if data is json serializable
                                 data = await response.json(content_type=None)
-                                redis_client.set(f"{key}:{self.cache_version}", data)
+
+                                redis_client.set(
+                                    f"{key}:{self.cache_version}", json.dumps(data)
+                                )
                             except Exception as e:
                                 self.logger.error(
                                     f"Failed to parse JSON data from {url}: {e}"
