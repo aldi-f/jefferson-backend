@@ -1,6 +1,5 @@
 import os
-from dataclasses import dataclass
-from tkinter.constants import N
+from dataclasses import dataclass, field
 
 
 @dataclass(frozen=True)
@@ -36,7 +35,6 @@ class Settings:
     JOB_RETRY_DELAY: int = int(os.getenv("JOB_RETRY_DELAY", "2"))
 
     # Jobs-specific configuration
-    WIKI_DATA_URL: str = os.getenv("WIKI_DATA_URL", "https://wiki.warframe.com/api.php")
     GITHUB_DATA_URL: str = os.getenv(
         "GITHUB_DATA_URL",
         "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data",
@@ -62,22 +60,24 @@ class Settings:
     OPENROUTER_API_KEY: str | None = os.getenv("OPENROUTER_API_KEY")
 
     # GitHub Data Sources
-    GITHUB_SOURCES: dict = {
-        "ability": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/ability.json",
-        "arcane": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/arcane.json",
-        "blueprint": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/blueprints.json",
-        "companion": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/companions.json",
-        "enemy": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/enemies.json",
-        "internalnames": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/internal_names.json",
-        "internalnames:en": "https://raw.githubusercontent.com/calamity-inc/warframe-public-export-plus/refs/heads/senpai/dict.en.json",
-        "missions": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/missions.json",
-        "mod": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/mods.json",
-        "skins": "https://raw.githubusercontent.com/WFCD/warframe-items/master/data/json/Skins.json",
-        "tennogen": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/tennogen.json",
-        "void": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/void.json",
-        "warframe": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/warframes.json",
-        "weapon": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/weapons.json",
-    }
+    GITHUB_SOURCES: dict = field(
+        default_factory=lambda: {
+            "ability": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/ability.json",
+            "arcane": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/arcane.json",
+            "blueprint": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/blueprints.json",
+            "companion": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/companions.json",
+            "enemy": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/enemies.json",
+            "internalnames": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/internal_names.json",
+            "internalnames:en": "https://raw.githubusercontent.com/calamity-inc/warframe-public-export-plus/refs/heads/senpai/dict.en.json",
+            "missions": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/missions.json",
+            "mod": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/mods.json",
+            "skins": "https://raw.githubusercontent.com/WFCD/warframe-items/master/data/json/Skins.json",
+            "tennogen": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/tennogen.json",
+            "void": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/void.json",
+            "warframe": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/warframes.json",
+            "weapon": "https://raw.githubusercontent.com/aldi-f/warframe-wiki-scraper/refs/heads/main/data/weapons.json",
+        }
+    )
 
     # To reference cache keys (e.g. ability:1)
     CACHE_VERSION = os.getenv("CACHE_VERSION", "1")
@@ -85,29 +85,29 @@ class Settings:
     # Which cogs to load (module paths)
     COGS: tuple[str, ...] = (
         "app.bot.cogs.alerts",
-        "app.bot.cogs.arcane",
-        "app.bot.cogs.archon",
-        "app.bot.cogs.baro",
-        "app.bot.cogs.bounty",
-        "app.bot.cogs.calendar",
-        "app.bot.cogs.circuit",
-        "app.bot.cogs.coda",
-        "app.bot.cogs.darvo",
-        "app.bot.cogs.duviri",
-        "app.bot.cogs.eda",
-        "app.bot.cogs.fissure",
+        # "app.bot.cogs.arcane",
+        # "app.bot.cogs.archon",
+        # "app.bot.cogs.baro",
+        # "app.bot.cogs.bounty",
+        # "app.bot.cogs.calendar",
+        # "app.bot.cogs.circuit",
+        # "app.bot.cogs.coda",
+        # "app.bot.cogs.darvo",
+        # "app.bot.cogs.duviri",
+        # "app.bot.cogs.eda",
+        # "app.bot.cogs.fissure",
         "app.bot.cogs.help",
-        "app.bot.cogs.mod",
-        "app.bot.cogs.nightwave",
-        "app.bot.cogs.ping",
-        "app.bot.cogs.pricecheck",
-        "app.bot.cogs.prime",
-        "app.bot.cogs.profile",
-        "app.bot.cogs.pset",
-        "app.bot.cogs.relic",
-        "app.bot.cogs.riven",
-        "app.bot.cogs.sortie",
-        "app.bot.cogs.weapons",
+        # "app.bot.cogs.mod",
+        # "app.bot.cogs.nightwave",
+        # "app.bot.cogs.ping",
+        # "app.bot.cogs.pricecheck",
+        # "app.bot.cogs.prime",
+        # "app.bot.cogs.profile",
+        # "app.bot.cogs.pset",
+        # "app.bot.cogs.relic",
+        # "app.bot.cogs.riven",
+        # "app.bot.cogs.sortie",
+        # "app.bot.cogs.weapons",
     )
 
 

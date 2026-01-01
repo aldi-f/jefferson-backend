@@ -1,24 +1,25 @@
-import discord
-from discord.ext import commands
 import logging
 import time
+
+import discord
+from discord.ext import commands
+
+from app.clients.warframe.worldstate.client import worldstate_client
 
 
 class Alerts(commands.Cog):
     """Warframe alerts command."""
-    
+
     def __init__(self, bot):
         self.bot = bot
         self.logger = logging.getLogger(__name__)
 
     @commands.hybrid_command(
-        name="alerts", 
-        with_app_command=True, 
-        description="Data about current alerts."
+        name="alerts", with_app_command=True, description="Data about current alerts."
     )
     async def alerts(self, ctx: commands.Context):
         """
-        Usage: !alerts\n
+        Usage: -alerts\n
         Data about current alerts
         """
         start = time.time()
@@ -26,7 +27,7 @@ class Alerts(commands.Cog):
 
         try:
             # Get worldstate data using the new client
-            worldstate = await self.bot.worldstate.get_worldstate()
+            worldstate = await worldstate_client.get_worldstate()
             alerts = worldstate.alerts
 
             if len(alerts) == 0:
@@ -40,36 +41,30 @@ class Alerts(commands.Cog):
 
                 expiry_text = f"Ends: <t:{int(alert.expiry.timestamp())}:R>\n"
 
-                desc_text = f"**{key}**\n{expiry_text}"
-
-                if len(alert.mission_info.reward) == 0:
-                    embed.add_field(
-                        name=f"{info.mission_type}",
-                        value=desc_text,
-                        inline=False
-                    )
+                if info.max_waves:
+                    wave_text = f"Waves: {info.max_waves}\n"
                 else:
-                    for reward in alert.mission_info.reward:
-                        if reward.__class__.__name__ == "Cred":
-                            reward_str = f"{reward.credits:,} Credits"
-                        elif reward.__class__.__name__ == "Item":
-                            reward_str = f"{reward.name} ({reward.count})"
-                        else:
-                            reward_str = reward
+                    wave_text = ""
 
-                        field_name = f"{info.mission_type} - {reward_str}"
-                        embed.add_field(name=field_name, value=desc_text, inline=False)
+                rewards = info.mission_reward
+                reward_text = "Rewards:\n"
+                if rewards.credits:
+                    reward_text += f"- **Credits**: x{rewards.credits}\n"
+                for item in rewards.counted_items:
+                    reward_text += f"- **{item.item}**: x{item.quantity}\n"
+
+                value = f"{expiry_text}{wave_text}{reward_text}"
+                embed.add_field(name=key, value=value, inline=False)
 
             processing_time = round((time.time() - start) * 1000)
             embed.set_footer(text=f"Processing time: {processing_time}ms")
             await ctx.send(embed=embed)
-
         except Exception as e:
             self.logger.error(f"Error fetching alerts: {str(e)}")
             embed = discord.Embed(
                 color=discord.Color.red(),
                 title="Error",
-                description="Failed to fetch alerts. Please try again later."
+                description="Failed to fetch alerts. Please try again later.",
             )
             await ctx.send(embed=embed)
 

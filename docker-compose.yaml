@@ -1,7 +1,7 @@
 services:
   redis:
     restart: unless-stopped
-    image: redis:trixie
+    image: redis:alpine
     container_name: redis_jefferson
     command: redis-server --port 6378 --save "3600 1"
     volumes:
@@ -18,7 +18,7 @@ services:
       - TZ=UTC
     build:
       context: .
-    env_file: .env.example
+    env_file: .env
     depends_on:
       - redis
     networks:

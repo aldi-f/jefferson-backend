@@ -5,6 +5,7 @@ import sys
 
 from app.config.logging import setup_logging
 from app.config.settings import settings
+from app.jobs.load_wiki import JobRunner, LoadWikiJob
 
 
 class JeffersonApp:
@@ -100,6 +101,11 @@ class JeffersonApp:
         self.logger.info("Starting Jefferson application...")
 
         self.setup_signal_handlers()
+
+        # Run job once on startup
+        job = LoadWikiJob()
+        runner = JobRunner()
+        await runner.run_job(job)
 
         try:
             # Start Discord bot

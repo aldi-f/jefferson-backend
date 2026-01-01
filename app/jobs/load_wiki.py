@@ -35,7 +35,7 @@ class LoadWikiJob(BaseJob):
                     async with session.get(url) as response:
                         if response.status == 200:
                             try:
-                                data = await response.json()
+                                data = await response.json(content_type=None)
                                 redis_client.set(f"{key}:{self.cache_version}", data)
                             except Exception as e:
                                 self.logger.error(

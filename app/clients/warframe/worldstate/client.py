@@ -5,6 +5,7 @@ import aiohttp
 import msgspec
 from typing_extensions import Self
 
+from app.clients.warframe.worldstate.parsers.worldstate import WorldstateModel
 from app.config.settings import settings
 
 logger = logging.getLogger(__name__)
@@ -43,7 +44,7 @@ class WorldstateClient:
             logger.error(f"Error fetching worldstate: {e}")
             return None
 
-    async def get_worldstate(self, model_class=None):
+    async def get_worldstate(self):
         """Get current world state with caching."""
         now = asyncio.get_event_loop().time()
 
@@ -60,12 +61,9 @@ class WorldstateClient:
                     if response.status == 200:
                         data = await response.text()
 
-                        if model_class:
-                            self._cached_data = msgspec.json.decode(
-                                data, type=model_class, strict=False
-                            )
-                        else:
-                            self._cached_data = data
+                        self._cached_data = msgspec.json.decode(
+                            data, type=WorldstateModel, strict=False
+                        )
 
                         self._cached_at = now
                         logger.info("Worldstate data updated")

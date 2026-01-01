@@ -1,5 +1,3 @@
-aioredis
-asyncio
 cachetools
 discord.py==2.6.4
 fastapi
