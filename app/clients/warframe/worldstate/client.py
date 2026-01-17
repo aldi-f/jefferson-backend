@@ -61,7 +61,7 @@ class WorldstateClient:
                     if response.status == 200:
                         data = await response.text()
                         self._cached_data = msgspec.json.decode(
-                            data, type=WorldstateModel, strict=True
+                            data, type=WorldstateModel, strict=False
                         )
 
                         self._cached_at = now

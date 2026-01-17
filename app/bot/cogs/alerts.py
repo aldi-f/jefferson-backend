@@ -51,8 +51,14 @@ class Alerts(commands.Cog):
                 reward_text = "Rewards:\n"
                 if rewards.credits:
                     reward_text += f"- **Credits**: x{rewards.credits}\n"
-                for item in rewards.counted_items:
-                    reward_text += f"- **{item.item}**: x{item.quantity}\n"
+                
+                # Handle both items and counted_items
+                if rewards.items:
+                    for item in rewards.items:
+                        reward_text += f"- **{item}**: x1\n"
+                elif rewards.counted_items:
+                    for item in rewards.counted_items:
+                        reward_text += f"- **{item.item}**: x{item.quantity}\n"
 
                 value = f"{expiry_text}{wave_text}{reward_text}"
                 embed.add_field(name=key, value=value, inline=False)

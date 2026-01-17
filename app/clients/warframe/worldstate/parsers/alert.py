@@ -31,12 +31,19 @@ class _counted_items(Struct):
 
 class _missionReward(Struct):
     credits: int = field(name="credits", default=0)
+    items: list[str] = field(name="items", default_factory=list)
     counted_items: list[_counted_items] = field(
         name="countedItems", default_factory=list
     )
 
+    def __post_init__(self):
+        # Handle legacy countedItems field
+        if not self.items and self.counted_items:
+            # Convert counted_items to items format
+            self.items = [item.item for item in self.counted_items]
 
-class _MissionInfo(Struct):
+
+class _MissionInfo(Struct, kw_only=True):
     location: str = field(name="location")
     mission_type: str = field(name="missionType")
     faction: str = field(name="faction")
@@ -45,6 +52,9 @@ class _MissionInfo(Struct):
     min_level: int = field(name="minEnemyLevel", default=0)
     max_level: int = field(name="maxEnemyLevel", default=0)
     max_waves: int = field(name="maxWaveNum", default=0)
+    level_override: str | None = field(name="levelOverride", default=None)
+    enemy_spec: str | None = field(name="enemySpec", default=None)
+    desc_text: str | None = field(name="descText", default=None)
 
     def __post_init__(self):
         if isinstance(self.location, str):
@@ -58,6 +68,8 @@ class Alert(Struct):
     expiry: datetime | dict = field(name="Expiry")
     tag: str = field(name="Tag")
     mission_info: _MissionInfo = field(name="MissionInfo")
+    _id: dict | None = field(name="_id", default=None)
+    force_unlock: bool | None = field(name="ForceUnlock", default=None)
 
     def __post_init__(self):
         if isinstance(self.activation, dict):
