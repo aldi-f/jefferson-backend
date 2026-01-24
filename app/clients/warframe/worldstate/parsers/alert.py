@@ -31,16 +31,9 @@ class _counted_items(Struct):
 
 class _missionReward(Struct):
     credits: int = field(name="credits", default=0)
-    items: list[str] = field(name="items", default_factory=list)
     counted_items: list[_counted_items] = field(
         name="countedItems", default_factory=list
     )
-
-    def __post_init__(self):
-        # Handle legacy countedItems field
-        if not self.items and self.counted_items:
-            # Convert counted_items to items format
-            self.items = [item.item for item in self.counted_items]
 
 
 class _MissionInfo(Struct, kw_only=True):

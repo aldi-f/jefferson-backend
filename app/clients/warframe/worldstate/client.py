@@ -1,4 +1,5 @@
 import asyncio
+import json
 import logging
 
 import aiohttp
@@ -59,9 +60,9 @@ class WorldstateClient:
                 session = await self._get_session()
                 async with session.get(settings.WORLDSTATE_URL) as response:
                     if response.status == 200:
-                        data = await response.text()
+                        data = json.loads(await response.text())
                         self._cached_data = msgspec.json.decode(
-                            data, type=WorldstateModel, strict=False
+                            json.dumps(data), type=WorldstateModel, strict=True
                         )
 
                         self._cached_at = now
@@ -76,6 +77,18 @@ class WorldstateClient:
                 logger.error(f"Error fetching worldstate: {e}")
                 if self._cached_data is None:
                     raise e
+
+        return self._cached_data
+
+    def from_dict(self, payload: dict):
+        """Parse worldstate from a dict"""
+        try:
+            # Use msgspec.json.decode with strict=True for consistency
+            self._cached_data = msgspec.json.decode(
+                msgspec.json.encode(payload), type=WorldstateModel, strict=True
+            )
+        except Exception as e:
+            raise Exception(f"Error fetching worldstate: {e}")
 
         return self._cached_data
 
