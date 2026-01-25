@@ -1,6 +1,7 @@
 from msgspec import Struct, field
 
 from app.clients.warframe.worldstate.parsers.alert import Alert
+from app.clients.warframe.worldstate.parsers.archimedea import Archimedea
 from app.clients.warframe.worldstate.parsers.archon import ArchonHunt
 from app.clients.warframe.worldstate.parsers.baro import Baro
 from app.clients.warframe.worldstate.parsers.circuit import Circuit
@@ -18,6 +19,9 @@ class WorldstateModel(Struct, kw_only=True):
 
     # Alerts
     alerts: list[Alert] = field(name="Alerts", default_factory=list)
+
+    # Archimedea
+    conquests: list[Archimedea] = field(name="Conquests")
 
     # Archon hunt:
     lite_sorties: list[ArchonHunt] = field(name="LiteSorties")

@@ -85,8 +85,8 @@ class Settings:
     # Which cogs to load (module paths)
     COGS: tuple[str, ...] = (
         "app.bot.cogs.alerts",
-        # "app.bot.cogs.arcane",
-        # "app.bot.cogs.archon",
+        "app.bot.cogs.arcane",
+        "app.bot.cogs.archon",
         # "app.bot.cogs.baro",
         # "app.bot.cogs.bounty",
         # "app.bot.cogs.calendar",

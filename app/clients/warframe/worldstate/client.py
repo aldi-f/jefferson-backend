@@ -79,6 +79,9 @@ class WorldstateClient:
 
         return self._cached_data
 
+    def from_dict(self, data: dict) -> WorldstateModel:
+        return msgspec.convert(data, type=WorldstateModel, strict=False)
+
     async def clear_cache(self):
         """Clear cached worldstate data."""
         self._cached_data = None
