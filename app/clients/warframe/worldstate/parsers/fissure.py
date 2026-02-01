@@ -40,6 +40,9 @@ class Fissure(Struct):
             self.node = localize_internal_mission_name(self.node)
         if isinstance(self.mission_type, str):
             self.mission_type = localize_internal_mission_type(self.mission_type)
+            # I'll parse this properly later
+            if self.mission_type.lower() == "stage defense":
+                self.mission_type = "Defense"
         if isinstance(self.modifier, str):
             self.modifier = VOID_TYPE.get(self.modifier, self.modifier)
             self.tier = list(VOID_TYPE.values()).index(self.modifier) + 1

@@ -14,9 +14,21 @@ class Archon(commands.Cog):
         self.bot = bot
         self.logger = logging.getLogger(__name__)
 
-    @commands.hybrid_command(
-        name="archon", with_app_command=True, description="Data about current alerts."
+    @commands.command(
+        name="archon",
+        description="Data about current Archon Hunt",
+        aliases=["sportie", "archonhunt", "ah"],
     )
+    async def archon_cmd(self, ctx: commands.Context):
+        await self.archon(ctx)
+
+    @discord.app_commands.command(
+        name="archon", description="Data about current Archon Hunt"
+    )
+    async def archon_app_command(self, interaction: discord.Interaction):
+        context: commands.Context = await self.bot.get_context(interaction)
+        await self.archon(context)
+
     async def archon(self, ctx: commands.Context):
         """
         Usage: -archon\n
@@ -109,7 +121,7 @@ class ArchonBuilder:
         embed.description = parsed_archon.main_text + "\n" + parsed_archon.expiry_text
         for i, mission in enumerate(parsed_archon.missions):
             embed.add_field(
-                name=f"({i + 1}){mission.mission_type}",
+                name=f"({i + 1}) {mission.mission_type}",
                 value=mission.node,
                 inline=False,
             )

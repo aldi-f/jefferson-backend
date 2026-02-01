@@ -1,15 +1,13 @@
 ######################################################
 ## Temporal/Deep Archimedea
 ######################################################
+import re
 from datetime import datetime
 
 from msgspec import Struct, field
 from pytz import UTC
 
-from app.clients.warframe.utils.localization import (
-    localize_internal_mission_name,
-    localize_internal_name,
-)
+from app.clients.warframe.utils.localization import localize_internal_mission_type
 
 
 def parse_mongo_date(date_dict: dict) -> datetime:
@@ -20,15 +18,27 @@ def parse_mongo_date(date_dict: dict) -> datetime:
 
 
 class _Difficulties(Struct):
-    type: str = field(name="Type")
-    deviation: str = field(name="Deviation")
-    risks: list[str] = field(name="Risks")
+    type: str = field(name="type")
+    deviation: str = field(name="deviation")
+    risks: list[str] = field(name="risks")
+
+    def __post_init__(self):
+        self.deviation = re.sub(r"([a-z])([A-Z])", r"\1 \2", self.deviation)
+        self.risks = [re.sub(r"([a-z])([A-Z])", r"\1 \2", risk) for risk in self.risks]
 
 
 class _ArchimedeaMission(Struct):
-    faction: str = field(name="Faction")
-    type: str = field(name="Type")
+    faction: str = field(name="faction")
+    mission_type: str = field(name="missionType")
     difficulties: list[_Difficulties] = field(name="difficulties")
+
+    def __post_init__(self):
+        if isinstance(self.mission_type, str):
+            self.mission_type = localize_internal_mission_type(self.mission_type)
+
+            # I'll parse this properly later
+            if "defense" in self.mission_type.lower():
+                self.mission_type = "Defense"
 
 
 class Archimedea(Struct):
@@ -37,6 +47,12 @@ class Archimedea(Struct):
     type: str = field(name="Type")
     missions: list[_ArchimedeaMission] = field(name="Missions")
     variables: list[str] = field(name="Variables")
+
+    def __post_init__(self):
+        if isinstance(self.activation, dict):
+            self.activation = parse_mongo_date(self.activation)
+        if isinstance(self.expiry, dict):
+            self.expiry = parse_mongo_date(self.expiry)
 
 
 # "Conquests": [

@@ -87,6 +87,7 @@ class Settings:
         "app.bot.cogs.alerts",
         "app.bot.cogs.arcane",
         "app.bot.cogs.archon",
+        "app.bot.cogs.archimedea",
         # "app.bot.cogs.baro",
         # "app.bot.cogs.bounty",
         # "app.bot.cogs.calendar",
