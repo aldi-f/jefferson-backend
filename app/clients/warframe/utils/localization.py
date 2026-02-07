@@ -29,11 +29,21 @@ def localize_internal_name(internal_name: str, language: str = "en") -> str:
     """Localize an internal name."""
     new_internal_name = normalize_internal_name(internal_name)
 
+    # try with language
     data = redis_client.get(f"internalnames:{language}:{settings.CACHE_VERSION}")
-
     if data:
-        return json.loads(data).get(new_internal_name, new_internal_name)
+        test = json.loads(data).get(new_internal_name)
 
+        if test:
+            return test
+
+    # try without language
+    data = redis_client.get(f"internalnames:{settings.CACHE_VERSION}")
+    if data:
+        test = json.loads(data).get(new_internal_name)
+
+        if test:
+            return test
     return new_internal_name
 
 
