@@ -2,6 +2,7 @@ import json
 from functools import cache
 
 from app.clients.redis import redis_client
+from app.clients.warframe.utils.constant import FACTION_TYPE, MISSION_TYPE
 from app.config.settings import settings
 
 
@@ -59,13 +60,9 @@ def localize_internal_mission_name(internal_name: str) -> str:
     return internal_name
 
 
-@cache
 def localize_internal_mission_type(internal_name: str) -> str:
-    data = redis_client.get(f"missions:{settings.CACHE_VERSION}")
-    if data:
-        data = json.loads(data)
-        mission_types = data["MissionTypes"]
-        for mission_type, mission_dict in mission_types.items():
-            if mission_dict.get("InternalName") == internal_name:
-                return mission_type
-    return internal_name
+    return MISSION_TYPE.get(internal_name, internal_name)
+
+
+def localize_internal_faction_type(internal_name: str) -> str:
+    return FACTION_TYPE.get(internal_name, internal_name)

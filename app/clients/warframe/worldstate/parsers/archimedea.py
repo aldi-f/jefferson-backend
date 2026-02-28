@@ -7,7 +7,10 @@ from datetime import datetime
 from msgspec import Struct, field
 from pytz import UTC
 
-from app.clients.warframe.utils.localization import localize_internal_mission_type
+from app.clients.warframe.utils.localization import (
+    localize_internal_faction_type,
+    localize_internal_mission_type,
+)
 
 
 def parse_mongo_date(date_dict: dict) -> datetime:
@@ -35,10 +38,8 @@ class _ArchimedeaMission(Struct):
     def __post_init__(self):
         if isinstance(self.mission_type, str):
             self.mission_type = localize_internal_mission_type(self.mission_type)
-
-            # I'll parse this properly later
-            if "defense" in self.mission_type.lower():
-                self.mission_type = "Defense"
+        if isinstance(self.faction, str):
+            self.faction = localize_internal_faction_type(self.faction)
 
 
 class Archimedea(Struct):

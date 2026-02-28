@@ -96,7 +96,8 @@ class AlertsBuilder:
             if rewards.items:
                 for item in rewards.items:
                     parsed_rewards.append(ParsedReward(name=str(item), quantity=1))
-            elif rewards.counted_items:
+
+            if rewards.counted_items:
                 for item in rewards.counted_items:
                     parsed_rewards.append(
                         ParsedReward(name=str(item.item), quantity=int(item.quantity))

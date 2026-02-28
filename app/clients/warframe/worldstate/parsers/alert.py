@@ -7,6 +7,7 @@ from msgspec import Struct, field
 from pytz import UTC
 
 from app.clients.warframe.utils.localization import (
+    localize_internal_faction_type,
     localize_internal_mission_name,
     localize_internal_mission_type,
     localize_internal_name,
@@ -37,10 +38,8 @@ class _missionReward(Struct):
     )
 
     def __post_init__(self):
-        # Handle legacy countedItems field
-        if not self.items and self.counted_items:
-            # Convert counted_items to items format
-            self.items = [item.item for item in self.counted_items]
+        if len(self.items) != 0:
+            self.items = [localize_internal_name(item) for item in self.items]
 
 
 class _MissionInfo(Struct, kw_only=True):
@@ -61,6 +60,8 @@ class _MissionInfo(Struct, kw_only=True):
             self.location = localize_internal_mission_name(self.location)
         if isinstance(self.mission_type, str):
             self.mission_type = localize_internal_mission_type(self.mission_type)
+        if isinstance(self.faction, str):
+            self.faction = localize_internal_faction_type(self.faction)
 
 
 class Alert(Struct):
@@ -101,6 +102,9 @@ class Alert(Struct):
 #       "difficulty": 1,
 #       "missionReward": {
 #         "credits": 10000,
+#         "items": [
+#           "/Lotus/StoreItems/Types/Items/ShipDecos/Props/Seasonal/StarDays2026HeartPictureFrame"
+#         ],
 #         "countedItems": [
 #           {
 #             "ItemType": "/Lotus/Types/Items/MiscItems/Forma",
