@@ -22,7 +22,7 @@ class Arcane(commands.Cog):
         with_app_command=True,
         description="Shows the closest matching arcane and its market price",
     )
-    async def arcane(self, ctx: commands.Context, arcane_name: str = ""):
+    async def arcane(self, ctx: commands.Context, *, arcane_name: str = ""):
         """
         Usage: -arcane\n
         Shows the closest matching arcane and its market price
