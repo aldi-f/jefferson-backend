@@ -10,6 +10,8 @@ from pytz import UTC
 from app.clients.warframe.utils.localization import (
     localize_internal_faction_type,
     localize_internal_mission_type,
+    localize_archimedea_difficulty,
+    localize_archimedea_variable,
 )
 
 
@@ -26,8 +28,8 @@ class _Difficulties(Struct):
     risks: list[str] = field(name="risks")
 
     def __post_init__(self):
-        self.deviation = re.sub(r"([a-z])([A-Z])", r"\1 \2", self.deviation)
-        self.risks = [re.sub(r"([a-z])([A-Z])", r"\1 \2", risk) for risk in self.risks]
+        self.deviation = localize_archimedea_difficulty(self.deviation)
+        self.risks = [localize_archimedea_difficulty(risk) for risk in self.risks]
 
 
 class _ArchimedeaMission(Struct):
@@ -54,6 +56,8 @@ class Archimedea(Struct):
             self.activation = parse_mongo_date(self.activation)
         if isinstance(self.expiry, dict):
             self.expiry = parse_mongo_date(self.expiry)
+        if isinstance(self.variables, list):
+            self.variables = [localize_archimedea_variable(variable) for variable in self.variables]
 
 
 # "Conquests": [

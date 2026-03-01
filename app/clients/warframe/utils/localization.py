@@ -1,8 +1,9 @@
+import re
 import json
 from functools import cache
 
 from app.clients.redis import redis_client
-from app.clients.warframe.utils.constant import FACTION_TYPE, MISSION_TYPE
+from app.clients.warframe.utils.constant import *
 from app.config.settings import settings
 
 
@@ -66,3 +67,15 @@ def localize_internal_mission_type(internal_name: str) -> str:
 
 def localize_internal_faction_type(internal_name: str) -> str:
     return FACTION_TYPE.get(internal_name, internal_name)
+
+def localize_archimedea_difficulty(internal_name: str) -> str:
+    """If mapped, return the description."""
+    if internal_name in ARCHIMEDEA_DIFFICULTIES:
+        return ARCHIMEDEA_DIFFICULTIES.get(internal_name).get("description")
+    return re.sub(r"([a-z])([A-Z])", r"\1 \2", internal_name)
+
+def localize_archimedea_variable(internal_name: str) -> str:
+    """If mapped, return the description."""
+    if internal_name in ARCHIMEDEA_VARIABLES:
+        return ARCHIMEDEA_VARIABLES.get(internal_name).get("description")
+    return re.sub(r"([a-z])([A-Z])", r"\1 \2", internal_name)

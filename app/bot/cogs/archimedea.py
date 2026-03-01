@@ -33,7 +33,7 @@ class WeeklyArchimedea(commands.Cog):
 
             processing_time = round((time.time() - start) * 1000)
             message["embed"].set_footer(
-                text=f"**CAUTION**: DE is providing the wrong deviations and risks, verify them in game!\nProcessing time: {processing_time}ms"
+                text=f"Processing time: {processing_time}ms"
             )
             await ctx.send(**message)
 
@@ -98,7 +98,7 @@ class ParsedArchimedeaMissions:
     def difficulties_text(self) -> str:
         # hard includes normal + the extra risks
         hard = filter(lambda d: d.type == "CD_HARD", self.difficulties).__next__()
-        return f"Deviation: {hard.deviation}\n" + f"Risk: {'\nRisk: '.join(hard.risks)}"
+        return f"**Deviation:** {hard.deviation}\n" + f"**Risk:** {'\n**Risk:** '.join(hard.risks)}"
 
 
 @dataclass(frozen=True)
@@ -111,6 +111,10 @@ class ParsedArchimedea:
     @property
     def expiry_text(self) -> str:
         return f"Ends: <t:{self.expiry_ts}:R>"
+
+    @property
+    def variables_text(self) -> str:
+        return f"Variables:\n- {'\n- '.join(self.variables)}"
 
 
 class ArchimedeaBuilder:
@@ -173,7 +177,7 @@ class ArchimedeaBuilder:
     @staticmethod
     def build_message(parsed_archimedea: ParsedArchimedea) -> dict:
         embed = discord.Embed(color=discord.Colour.blue(), title=parsed_archimedea.type)
-        embed.description = parsed_archimedea.expiry_text
+        embed.description = f"{parsed_archimedea.expiry_text}\n{parsed_archimedea.variables_text}"
         for i, mission in enumerate(parsed_archimedea.missions):
             embed.add_field(
                 name=f"({i + 1}) {mission.mission_type}",

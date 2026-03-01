@@ -64,3 +64,36 @@ MISSION_TYPE = {
     "MT_SABOTAGE": "Sabotage",
     "MT_SURVIVAL": "Survival",
 }
+
+# Skeptical mappings from what I'm seeing in game and worldstate
+ARCHIMEDEA_DIFFICULTIES = {
+    "AcceleratedEnemies": {"name": "Bold Venture", "description": "Enemies deal -15% damage and take 15% damage, but gain 15% movement speed, attack speed and fire rate."},
+    "ArtilleryBeacons": {"name": "Artillery Beacons", "description": "When killed, Scaldra troops drop beacons that summon bombardments."},
+    "BalloonFest": {"name": "Balloonfest", "description": "Scaldra Harbingers are more numerous and attack and move more quickly."},
+    "DoubleTroubleLegacyte": {"name": "Mitosis", "description": "2 Legacytes spawn each round. Twice as many captures are needed for success."},
+    "DrainingResiduals": {"name": "Devil's Bargain", "description": "Allies within 4m of slain enemies gain 25% fire rate at the cost of -50% ammo efficiency."},
+    "EfervonFog": {"name": "Dense Fog", "description": "Efervon gas blankets the level. Enemies drop filters that can provide a temporary reprive."},
+    "EMPBlackHole": {"name": "Alluring Arcocanids", "description": "As Rogue Arcocanids charge attacks, they pull warframes towards them."},
+    "ExplosiveCrawlers": {"name": "Explosive Potential", "description": "Rupturing Fragments replace Shuffling Fragments."},
+    "ExplosiveEnergy": {"name": "Miasmite Mash", "description": "Enemies drop Miasmite upon death that immediately rush Flare."},
+    "FactionSwarm_Scaldra": {"name": "Scaldra Speed Run", "description": "All enemies are replaced with Scaldra and move faster."},
+    "HostileSecurity": {"name": "Eroding Senses", "description": "Auricle and Vitreum take damage over time. Collecting the required glyphs will halt the DoT and partially heal them."},
+    "NecramechActivation": {"name": "Necramech Influx", "description": "Necramechs appear with greater frequency."},
+    "Quicksand": {"name": "Entanglement", "description": "Allies within 4m of slain enemies endure reduced movement and parkour velocity."},
+    "ShieldedFoes": {"name": "Bolstered Belligerents", "description": "All enemies have 50% overguard equal to 50% of their max health."},
+    "StickyFingers": {"name": "Engorged Gruzzlings", "description": "All Gruzzlings are Eximus."},
+    "TankReinforcements": {"name": "Reinforcements", "description": "Reinforcements will arrive during the fight; first Scaldra, then Techrot."},
+    "VoidAberration": {"name": "Vampyric Liminus", "description": "Immortal Duviri Liminus that drains health and energy when close."},
+
+}
+
+# Skeptical mappings from what I'm seeing in game and worldstate
+ARCHIMEDEA_VARIABLES = {
+    "AbilityLockout": {"name": "Powerless", "description": "All abilities are disabled until squad kills 50 enemies."},
+    "Armorless": {"name": "Fractured Armor", "description": "Casting an ability reduced armor by 10% for 10s."},
+    "DullBlades": {"name": "Dull Blades", "description": "-50% combo count chance."},
+    "EnergyStarved": {"name": "Constricted", "description": "Max energy reduced by 50%."},
+    "Knifestep": {"name": "Knifestep Syndrome", "description": "Lose 2 health when moving. Jumping pauses the effect."},
+    "ShieldDelay": {"name": "Lethargic Shields", "description": "Shield recharge delay increased by 500%."},
+    "Starvation": {"name": "Ammo Deficit", "description": "Ammo restored by drops and gear redcued by 75%."},
+}
