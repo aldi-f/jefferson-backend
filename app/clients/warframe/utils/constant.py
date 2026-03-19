@@ -84,7 +84,13 @@ ARCHIMEDEA_DIFFICULTIES = {
     "StickyFingers": {"name": "Engorged Gruzzlings", "description": "All Gruzzlings are Eximus."},
     "TankReinforcements": {"name": "Reinforcements", "description": "Reinforcements will arrive during the fight; first Scaldra, then Techrot."},
     "VoidAberration": {"name": "Vampyric Liminus", "description": "Immortal Duviri Liminus that drains health and energy when close."},
-
+    "MutatedEnemies": {"name": "Parallel Evolution", "description": "As Legacyte evolves, other enemies gain new abilities."},
+    "JadeSpring": {"name": "Jade Spirits", "description": "Jade Wisps haunt the region. If approached, they chase down the player and transform into Jade Light beams."},
+    "ChemicalNoise": {"name": "Noise Suppression", "description": "Drones fly above Flare, spraying them with Efervon gas."},
+    "MiasmiteHive": {"name": "Miasmite Swarm", "description": "Techrot Miasmites swarm out of the shadows throughout the mission."},
+    "HostileOvergrowth": {"name": "It's Alive", "description": "Within the underground, hostile overgrowths will attak if players stop moving."},
+    "TankSuperToxic": {"name": "Toxic Tank", "description": "Tank has Toxin aura, leaves Toxin trails and its attacks all deal Toxin damage."},
+    "PointBlank": {"name": "Myopic Munitions", "description": "Enemies will only take damage if a player is within 15m of them."},
 }
 
 # Skeptical mappings from what I'm seeing in game and worldstate
@@ -95,5 +101,8 @@ ARCHIMEDEA_VARIABLES = {
     "EnergyStarved": {"name": "Constricted", "description": "Max energy reduced by 50%."},
     "Knifestep": {"name": "Knifestep Syndrome", "description": "Lose 2 health when moving. Jumping pauses the effect."},
     "ShieldDelay": {"name": "Lethargic Shields", "description": "Shield recharge delay increased by 500%."},
-    "Starvation": {"name": "Ammo Deficit", "description": "Ammo restored by drops and gear redcued by 75%."},
+    "OperatorLockout": {"name": "Transference Distortion", "description": "Transference into Operator is blocked"},
+    "Exhaustion": {"name": "Energy Exhaustion", "description": "Lose 2 energy/s for each enemy within 10m of you"},
+    "TimeDilation": {"name": "Abbreviated Abilities", "description": "Ability durations reduced by 50%"},
+    "Framecurse": {"name": "Framecurse Syndrome", "description": "Activating an ability inflicts 50 damage upon you"},
 }
