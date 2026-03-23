@@ -98,9 +98,10 @@ docker-compose up -d
 /sortie             - Display daily sortie missions
 /nightwave          - Show current nightwave challenges
 /baro               - Void trader inventory and location
-/circuit            - Steel Path circuit information
+/circuit            - Current Circuit rotation
 /archon             - Weekly archon hunt details
 /darvo              - Current Darvo deals
+/nightwave          - Current Nightwave season and challenges
 /ping               - Check bot latency
 /help               - Show help information
 ```

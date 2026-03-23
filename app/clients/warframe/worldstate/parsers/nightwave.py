@@ -22,25 +22,30 @@ class _ActiveChallenge(Struct):
     activation: datetime | dict = field(name="Activation")
     expiry: datetime | dict = field(name="Expiry")
     challenge: str = field(name="Challenge")
+    challenge_type: str = ""
 
     def __post_init__(self):
         if isinstance(self.activation, dict):
             self.activation = parse_mongo_date(self.activation)
         if isinstance(self.expiry, dict):
             self.expiry = parse_mongo_date(self.expiry)
-        if isinstance(self.challenge, dict):
+
+        # Determine type from raw path BEFORE localization
+        if "/WeeklyHard/" in self.challenge:
+            self.challenge_type = "Weekly Hard"
+        elif "/Weekly/" in self.challenge:
+            self.challenge_type = "Weekly"
+        elif "/Daily/" in self.challenge:
+            self.challenge_type = "Daily"
+        else:
+            self.challenge_type = "Unknown"
+
+        if isinstance(self.challenge, str):
             self.challenge = localize_internal_name(self.challenge)
 
     @property
     def type(self) -> str:
-        if "Daily" in self.challenge:
-            return "Daily"
-        elif "Weekly" in self.challenge:
-            return "Weekly"
-        elif "WeeklyHard" in self.challenge:
-            return "Weekly Hard"
-        else:
-            return "Unknown"
+        return self.challenge_type
 
     @property
     def standing(self) -> int:
