@@ -67,7 +67,7 @@ class ParsedDarvo:
 
     @property
     def price_text(self) -> str:
-        platinum_emote = "<:Platinum:967436929247350785>"
+        platinum_emote = "<:Platinum:992917150358589550>"
         return f"~~{self.original_price}~~ {self.sale_price}{platinum_emote} ({self.discount}% off)"
 
     @property
