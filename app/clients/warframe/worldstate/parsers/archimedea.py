@@ -1,17 +1,16 @@
 ######################################################
 ## Temporal/Deep Archimedea
 ######################################################
-import re
 from datetime import datetime
 
 from msgspec import Struct, field
 from pytz import UTC
 
 from app.clients.warframe.utils.localization import (
-    localize_internal_faction_type,
-    localize_internal_mission_type,
     localize_archimedea_difficulty,
     localize_archimedea_variable,
+    localize_internal_faction_type,
+    localize_internal_mission_type,
 )
 
 
@@ -57,7 +56,9 @@ class Archimedea(Struct):
         if isinstance(self.expiry, dict):
             self.expiry = parse_mongo_date(self.expiry)
         if isinstance(self.variables, list):
-            self.variables = [localize_archimedea_variable(variable) for variable in self.variables]
+            self.variables = [
+                localize_archimedea_variable(variable) for variable in self.variables
+            ]
 
 
 # "Conquests": [

@@ -1,6 +1,5 @@
 import logging
 import time
-from cmath import e
 from dataclasses import dataclass
 
 import discord
@@ -10,7 +9,7 @@ from app.clients.warframe.worldstate.client import worldstate_client
 from app.clients.warframe.worldstate.parsers.darvo import Darvo as DarvoModel
 
 
-class DarvoCog(commands.Cog):
+class Darvo(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.logger = logging.getLogger(__name__)
@@ -48,7 +47,7 @@ class DarvoCog(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(DarvoCog(bot))
+    await bot.add_cog(Darvo(bot))
 
 
 @dataclass(frozen=True)

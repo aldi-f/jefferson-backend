@@ -11,7 +11,7 @@ from app.clients.warframe.worldstate.parsers.nightwave import (
 )
 
 
-class NightwaveCog(commands.Cog):
+class Nightwave(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.logger = logging.getLogger(__name__)
@@ -42,7 +42,7 @@ class NightwaveCog(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(NightwaveCog(bot))
+    await bot.add_cog(Nightwave(bot))
 
 
 @dataclass(frozen=True)

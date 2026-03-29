@@ -6,10 +6,10 @@ import discord
 from discord.ext import commands
 
 from app.clients.warframe.worldstate.client import worldstate_client
-from app.clients.warframe.worldstate.parsers.archon import ArchonHunt
+from app.clients.warframe.worldstate.parsers.archon import ArchonHunt as ArchonHuntModel
 
 
-class Archon(commands.Cog):
+class ArchonHunt(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.logger = logging.getLogger(__name__)
@@ -46,17 +46,17 @@ class Archon(commands.Cog):
             await ctx.send(**message)
 
         except Exception as e:
-            self.logger.error(f"Error fetching alerts: {str(e)}")
+            self.logger.error(f"Error fetching archon: {str(e)}")
             embed = discord.Embed(
                 color=discord.Color.red(),
                 title="Error",
-                description="Failed to fetch alerts. Please try again later.",
+                description="Failed to fetch archon. Please try again later.",
             )
             await ctx.send(embed=embed)
 
 
 async def setup(bot):
-    await bot.add_cog(Archon(bot))
+    await bot.add_cog(ArchonHunt(bot))
 
 
 @dataclass(frozen=True)
@@ -98,7 +98,7 @@ class ArchonBuilder:
             return ""
 
     @staticmethod
-    def parse_archon(worldstate_archon: list[ArchonHunt]) -> ParsedArchon:
+    def parse_archon(worldstate_archon: list[ArchonHuntModel]) -> ParsedArchon:
         archon = worldstate_archon[0]  # list with 1 element
         missions = []
         for mission in archon.missions:

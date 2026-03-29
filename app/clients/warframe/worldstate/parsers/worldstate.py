@@ -9,6 +9,7 @@ from app.clients.warframe.worldstate.parsers.darvo import Darvo
 from app.clients.warframe.worldstate.parsers.fissure import Fissure
 from app.clients.warframe.worldstate.parsers.nightwave import Nightwave
 from app.clients.warframe.worldstate.parsers.sortie import Sortie
+from app.clients.warframe.worldstate.parsers.voidstorm import VoidStorm
 
 
 class WorldstateModel(Struct, kw_only=True):
@@ -38,8 +39,17 @@ class WorldstateModel(Struct, kw_only=True):
     # Fissures
     active_missions: list[Fissure] = field(name="ActiveMissions")
 
+    # Railjack fissures
+    void_storms: list[VoidStorm] = field(name="VoidStorms")
+
     # Nightwave
     season_info: Nightwave = field(name="SeasonInfo")
 
     # Sortie
     sorties: list[Sortie] = field(name="Sorties")
+
+    def __post_init__(self):
+        # sort fissures by relic tier
+        self.active_missions.sort(key=lambda fissure: fissure.tier, reverse=True)
+        # sort void storms by tier
+        self.void_storms.sort(key=lambda storm: storm.tier, reverse=True)

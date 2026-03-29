@@ -6,10 +6,10 @@ import discord
 from discord.ext import commands
 
 from app.clients.warframe.worldstate.client import worldstate_client
-from app.clients.warframe.worldstate.parsers.baro import Baro
+from app.clients.warframe.worldstate.parsers.baro import Baro as BaroModel
 
 
-class BaroKiteer(commands.Cog):
+class Baro(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.logger = logging.getLogger(__name__)
@@ -51,7 +51,7 @@ class BaroKiteer(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(BaroKiteer(bot))
+    await bot.add_cog(Baro(bot))
 
 
 class BaroView(discord.ui.View):
@@ -142,7 +142,7 @@ class BaroBuilder:
     items_per_page = 15  # discord limit on embed fields
 
     @staticmethod
-    def parse(worldstate_baro: list[Baro]) -> ParsedBaro:
+    def parse(worldstate_baro: list[BaroModel]) -> ParsedBaro:
 
         # list with 1 element
         actual_worldstate_baro = worldstate_baro[0]

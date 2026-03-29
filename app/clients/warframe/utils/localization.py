@@ -1,6 +1,6 @@
-import re
 import json
-from functools import cache
+import re
+from functools import lru_cache
 
 from app.clients.redis import redis_client
 from app.clients.warframe.utils.constant import *
@@ -26,10 +26,20 @@ def normalize_internal_name(internal_name: str) -> str:
     return new_internal_name
 
 
-@cache
+@lru_cache
 def localize_internal_name(internal_name: str, language: str = "en") -> str:
     """Localize an internal name."""
     new_internal_name = normalize_internal_name(internal_name)
+
+    suffix = ""
+    # Is it a blueprint?
+    if "/Components/" in new_internal_name and new_internal_name.endswith("Blueprint"):
+        data = redis_client.get(f"recipe:{settings.CACHE_VERSION}")
+        if data:
+            recipe = json.loads(data).get(new_internal_name)
+            if recipe:
+                new_internal_name = recipe.get("resultType")
+                suffix = " Blueprint"
 
     # try with language
     data = redis_client.get(f"internalnames:{language}:{settings.CACHE_VERSION}")
@@ -37,7 +47,7 @@ def localize_internal_name(internal_name: str, language: str = "en") -> str:
         test = json.loads(data).get(new_internal_name)
 
         if test:
-            return test
+            return test + suffix
 
     # try without language
     data = redis_client.get(f"internalnames:{settings.CACHE_VERSION}")
@@ -45,11 +55,12 @@ def localize_internal_name(internal_name: str, language: str = "en") -> str:
         test = json.loads(data).get(new_internal_name)
 
         if test:
-            return test
+            return test + suffix
+
     return new_internal_name
 
 
-@cache
+@lru_cache
 def localize_internal_mission_name(internal_name: str) -> str:
     data = redis_client.get(f"missions:{settings.CACHE_VERSION}")
     if data:
@@ -61,6 +72,18 @@ def localize_internal_mission_name(internal_name: str) -> str:
     return internal_name
 
 
+@lru_cache
+def localize_mission_type_from_node(node_internal_name: str) -> str:
+    data = redis_client.get(f"missions:{settings.CACHE_VERSION}")
+    if data:
+        data = json.loads(data)
+        obj = data["by"]["InternalName"].get(node_internal_name, [])
+        if len(obj) > 0:
+            mission = obj[0]
+            return mission.get("Type")
+    return ""
+
+
 def localize_internal_mission_type(internal_name: str) -> str:
     return MISSION_TYPE.get(internal_name, internal_name)
 
@@ -68,11 +91,13 @@ def localize_internal_mission_type(internal_name: str) -> str:
 def localize_internal_faction_type(internal_name: str) -> str:
     return FACTION_TYPE.get(internal_name, internal_name)
 
+
 def localize_archimedea_difficulty(internal_name: str) -> str:
     """If mapped, return the description."""
     if internal_name in ARCHIMEDEA_DIFFICULTIES:
         return ARCHIMEDEA_DIFFICULTIES.get(internal_name).get("description")
     return re.sub(r"([a-z])([A-Z])", r"\1 \2", internal_name)
+
 
 def localize_archimedea_variable(internal_name: str) -> str:
     """If mapped, return the description."""

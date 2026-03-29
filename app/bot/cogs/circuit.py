@@ -9,7 +9,7 @@ from app.clients.warframe.worldstate.client import worldstate_client
 from app.clients.warframe.worldstate.parsers.circuit import Circuit as CircuitModel
 
 
-class CircuitCog(commands.Cog):
+class Circuit(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.logger = logging.getLogger(__name__)
@@ -40,7 +40,7 @@ class CircuitCog(commands.Cog):
 
 
 async def setup(bot):
-    await bot.add_cog(CircuitCog(bot))
+    await bot.add_cog(Circuit(bot))
 
 
 @dataclass(frozen=True)
