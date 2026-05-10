@@ -5,7 +5,7 @@ from pytz import UTC
 
 
 @dataclass
-class RotationTimer:
+class DayBasedRotationTimer:
     start_date: datetime
     interval_days: int
 

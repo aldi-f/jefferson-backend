@@ -95,7 +95,7 @@ class Settings:
         "app.bot.cogs.circuit",
         "app.bot.cogs.coda",
         "app.bot.cogs.darvo",
-        # "app.bot.cogs.duviri",
+        "app.bot.cogs.duviri",
         "app.bot.cogs.fissure",
         "app.bot.cogs.help",
         # "app.bot.cogs.mod",

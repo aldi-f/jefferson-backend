@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 
 from pytz import UTC
 
-from app.clients.warframe.rotation_timers.base import RotationTimer
+from app.clients.warframe.rotation_timers.base import DayBasedRotationTimer
 
 PINNED_START = datetime(2026, 3, 29, 0, 0, 0, tzinfo=UTC)
 DAYS_IN_ROTATION = 4
@@ -29,7 +29,7 @@ class CodaRotationData:
     melee: list[str]
 
 
-class CodaRotation(RotationTimer):
+class CodaRotation(DayBasedRotationTimer):
     def __init__(
         self, start_date: datetime = PINNED_START, interval_days: int = DAYS_IN_ROTATION
     ):
