@@ -5,6 +5,7 @@ import sys
 
 from app.config.logging import setup_logging
 from app.config.settings import settings
+from app.jobs.load_market_items import LoadMarketItemsJob
 from app.jobs.load_wiki import JobRunner, LoadWikiJob
 
 
@@ -102,10 +103,13 @@ class JeffersonApp:
 
         self.setup_signal_handlers()
 
-        # Run job once on startup
+        # Run jobs once on startup
         job = LoadWikiJob()
         runner = JobRunner()
         await runner.run_job(job)
+
+        market_job = LoadMarketItemsJob()
+        await runner.run_job(market_job)
 
         try:
             # Start Discord bot
@@ -176,6 +180,23 @@ async def run_single_job(job_name: str):
             if result.error_details:
                 logger.error(f"Error details: {result.error_details}")
             sys.exit(1)
+    elif job_name == "load_market_items":
+        from app.jobs.base import JobRunner
+        from app.jobs.load_market_items import LoadMarketItemsJob
+
+        job = LoadMarketItemsJob()
+        runner = JobRunner()
+
+        result = await runner.run_job(job)
+
+        if result.status.value == "success":
+            logger.info(f"Job completed successfully: {result.message}")
+            sys.exit(0)
+        else:
+            logger.error(f"Job failed: {result.message}")
+            if result.error_details:
+                logger.error(f"Error details: {result.error_details}")
+            sys.exit(1)
     else:
         logger.error(f"Unknown job: {job_name}")
         sys.exit(1)
@@ -189,7 +210,7 @@ def main():
             asyncio.run(run_single_job(job_name))
         else:
             print("Usage: python -m app.main job <job_name>")
-            print("Available jobs: load_wiki")
+            print("Available jobs: load_wiki, load_market_items")
             sys.exit(1)
 
     app = JeffersonApp()

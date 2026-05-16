@@ -108,6 +108,7 @@ class Settings:
         # "app.bot.cogs.riven",
         "app.bot.cogs.sortie",
         "app.bot.cogs.weapons",
+        "app.bot.cogs.wfm",
     )
 
 
