@@ -8,5 +8,5 @@ pytz
 redis
 requests
 uvicorn
-warframe-market.py==1.0.4
+warframe-market.py
 aiohttp
