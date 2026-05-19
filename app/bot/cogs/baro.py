@@ -174,7 +174,7 @@ class BaroBuilder:
             embed = discord.Embed(color=discord.Colour.blue(), title="Baro Ki'Teer")
             embed.description = parsed_object.activation_text
             embed.color = discord.Colour.red()
-            return {"embed": embed}
+            return {"embeds": [embed]}
 
         total_pages = (
             len(parsed_object.inventory) + BaroBuilder.items_per_page - 1
