@@ -16,11 +16,21 @@ class Nightwave(commands.Cog):
         self.bot = bot
         self.logger = logging.getLogger(__name__)
 
-    @commands.hybrid_command(
+    @commands.command(
         name="nightwave",
-        with_app_command=True,
         description="Show current Nightwave season and challenges.",
+        aliases=["nw", "night"],
     )
+    async def nightwave_cmd(self, ctx: commands.Context):
+        await self.nightwave(ctx)
+
+    @discord.app_commands.command(
+        name="nightwave", description="Show current Nightwave season and challenges."
+    )
+    async def nightwave_app_command(self, interaction: discord.Interaction):
+        context: commands.Context = await self.bot.get_context(interaction)
+        await self.nightwave(context)
+
     async def nightwave(self, ctx: commands.Context):
         try:
             start = time.time()

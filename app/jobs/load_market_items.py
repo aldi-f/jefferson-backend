@@ -30,7 +30,7 @@ class LoadMarketItemsJob(BaseJob):
                 en_name = None
                 if item.i18n:
                     for locale, i18n_model in item.i18n.items():
-                        if locale.value == "en":
+                        if locale == "en":
                             en_name = i18n_model.name
                             break
                     if not en_name:
